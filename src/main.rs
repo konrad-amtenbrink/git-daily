@@ -1,15 +1,14 @@
 mod git;
+mod utils;
 
 fn main() {
     let repo = git::get_repo();
 
     git::fetch(&repo).expect("could not fetch repository");
 
-    let head = repo.head().expect("could not find head");
+    let mut revwalk = git::get_revwalk(&repo).expect("could not get revwalk");
 
-    let reflog = repo
-        .reflog(&head.name().expect("could not find head"))
-        .unwrap();
+    let commits = git::get_commits(&mut revwalk, &repo);
 
-    git::get_commit_messages(&reflog);
+    utils::pretty_print_commits(commits);
 }
