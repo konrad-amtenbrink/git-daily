@@ -8,18 +8,38 @@ pub struct CommitData {
     pub commit_author: String,
 }
 
-pub(crate) fn get_commits(revwalk: &mut git2::Revwalk, repo: &Repository) -> Vec<CommitData> {
+pub(crate) fn get_commits(
+    revwalk: &mut git2::Revwalk,
+    repo: &Repository,
+    user: &Option<String>,
+) -> Vec<CommitData> {
+    let user_name: String = user.as_ref().map_or("".to_string(), |s| s.to_string());
+
     let commits = revwalk
-        .take(10)
+        .take(50)
         .filter_map(|oid| Some(repo.find_commit(oid.expect("could not find commit"))));
 
     let mut commit_data_vec = Vec::new();
     commits.for_each(|commit| {
         let commit_data = get_commit_data(&commit.expect("could not find commit"));
-        commit_data_vec.push(commit_data);
+
+        if contains_user(&commit_data, &user_name) {
+            commit_data_vec.push(commit_data);
+        }
     });
 
     return commit_data_vec;
+}
+
+fn contains_user(commit_data: &CommitData, user_name: &String) -> bool {
+    if user_name.is_empty() {
+        return true;
+    }
+
+    return commit_data
+        .commit_author
+        .to_ascii_lowercase()
+        .contains(&user_name.to_ascii_lowercase());
 }
 
 fn get_commit_data(commit: &Commit) -> CommitData {
