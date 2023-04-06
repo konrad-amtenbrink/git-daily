@@ -33,11 +33,13 @@ fn get_formatted_duration(diff: Duration) -> String {
         duration = diff.num_minutes();
         unit = "minutes";
     }
+
     if duration > 60 {
         duration = diff.num_hours();
         unit = "hours";
     }
-    if duration > 24 {
+
+    if duration > 24 && unit == "hours" {
         duration = diff.num_days();
         unit = "days";
     }
