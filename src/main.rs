@@ -8,7 +8,7 @@ fn main() {
 
     let mut revwalk = git::get_revwalk(&repo).expect("could not get revwalk");
 
-    let commits = git::get_commits(&mut revwalk, &repo);
+    let commits = git::commit::get_commits(&mut revwalk, &repo);
 
     utils::pretty_print_commits(commits);
 }

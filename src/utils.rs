@@ -1,4 +1,4 @@
-use crate::git::CommitData;
+use crate::git::commit::CommitData;
 use colored::Colorize;
 
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
@@ -19,8 +19,8 @@ pub(crate) fn convert_time(timestamp: i64) -> String {
     let naive = NaiveDateTime::from_timestamp(timestamp, 0);
     let datetime: DateTime<Utc> = DateTime::from_utc(naive, Utc);
 
-    let end_time: DateTime<Utc> = Utc::now();
-    let diff = end_time - datetime;
+    let now: DateTime<Utc> = Utc::now();
+    let diff = now - datetime;
 
     return get_formatted_duration(diff);
 }
@@ -28,6 +28,7 @@ pub(crate) fn convert_time(timestamp: i64) -> String {
 fn get_formatted_duration(diff: Duration) -> String {
     let mut duration: i64 = diff.num_seconds();
     let mut unit = "seconds";
+
     if duration > 60 {
         duration = diff.num_minutes();
         unit = "minutes";
@@ -40,5 +41,6 @@ fn get_formatted_duration(diff: Duration) -> String {
         duration = diff.num_days();
         unit = "days";
     }
+
     return format!("{} {} ago", duration, unit);
 }
